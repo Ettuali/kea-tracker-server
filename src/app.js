@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
+const pool = require("./config/db");
 
 const mountRoutes = require("./routes/routes");
 
@@ -16,8 +17,11 @@ app.use(express.urlencoded({ extended: true }));
 mountRoutes(app);
 
 // Root test route (optional but useful)
-app.get("/", (req, res) => {
-  res.send("API Running...");
+app.get("/db-check", async (req, res) => {
+  const result = await pool.query(`
+    SELECT current_database(), current_user
+  `);
+  res.json(result.rows);
 });
 
 // START SERVER
